@@ -4,14 +4,14 @@ using System.Collections;
 public class WeaponShooting : MonoBehaviour 
 {
 	public GUIStyle myStyle;
-	public Texture2D crosshair;
+
 	
 	public GameObject PrimaryWeapon;
 	public GameObject SecondaryWeapon;
 	
 	
 	
-	public float offsetY;
+
 	private Animation gunAnim;
 	private float nextFire;
 	
@@ -22,18 +22,22 @@ public class WeaponShooting : MonoBehaviour
 	void Start () 
 	{
 		cs = GetComponent<MyThirdPersonController_Shoulder>();
-		ws = PrimaryWeapon.GetComponent<WeaponStats>();	
-		Restock ();
-		Screen.lockCursor = true;
+		try {
+			ws = PrimaryWeapon.GetComponent<WeaponStats>();	
+			Restock ();
+		} catch(UnassignedReferenceException e) {
+		}
+			
+
 		
 	}
 	void FixedUpdate()
 	{
-		Debug.Log ("FixedUpdate");
+
 	}
 	void Update () 
 	{
-		Debug.Log("Update");
+
 		if(Input.GetButtonDown ("Fire1")) 
 		{
 			if(ws.currentClip > 0 && Time.time > nextFire) 
@@ -50,8 +54,14 @@ public class WeaponShooting : MonoBehaviour
 			Reload();
 		}
 		
-		
-		
+		if(Input.GetKeyDown (KeyCode.F)) 
+		{
+			if (PrimaryWeapon != null)  // this is only the case for test shotgun with flashlight. Flashlight needs to be handheld and not attached to a weapon. 
+			{
+				SwitchFlashlight();
+			}
+		}
+
 		// -------- Debugging -----------// 
 
 		//cs.aimDir = Quaternion.LookRotation (cs.aimPoint - ws.gunMuzzle.transform.position);
@@ -62,11 +72,20 @@ public class WeaponShooting : MonoBehaviour
 		//-------------------------------//
 		
 	}
-	
+
+
+
+	private void SwitchFlashlight() 
+	{ 
+		Transform flashlight = PrimaryWeapon.transform.Find("Spotlight"); 
+		flashlight.light.enabled = !flashlight.light.enabled;
+	}
 	
 	void OnGUI() {
-		ApplyCrosshair();
-		ShowAmmo();
+		if (PrimaryWeapon != null && SecondaryWeapon != null)
+		{
+			ShowAmmo();
+		}
 	}
 	
 	void Shoot() 
@@ -75,7 +94,7 @@ public class WeaponShooting : MonoBehaviour
 		ws.currentClip--;
 	
 		
-		GameObject clone = Instantiate (ws.projectile, ws.gunMuzzle.transform.position, cs.aimDir) as GameObject;
+		//GameObject clone = Instantiate (ws.projectile, ws.gunMuzzle.transform.position, cs.aimDir) as GameObject;
 		
 		//Ray ray = Physics.Raycast
 				//Debug.DrawRay(		
@@ -130,16 +149,7 @@ public class WeaponShooting : MonoBehaviour
 		//ws.maxAmmo = ws.maxClip + ws.currentAmmo;
 	}
 
-	void ApplyCrosshair() 
-	{
 
-		
-		float middleScreenX = Screen.width / 2;
-		float middleScreenY = Screen.height / 2;
-
-		Rect aimPos = new Rect(middleScreenX-20, middleScreenY-offsetY, 20, 20);
-		GUI.DrawTexture(aimPos, crosshair);	
-	}
 	
 	void ShowAmmo()
 	{

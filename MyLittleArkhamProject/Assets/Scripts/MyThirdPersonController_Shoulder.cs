@@ -119,7 +119,9 @@ public class MyThirdPersonController_Shoulder : MonoBehaviour {
 		}
 		if(Input.GetKeyDown(KeyCode.Space))
 		{
-			verticalSpeed = jumpSpeed;
+			if(IsGrounded()) {
+				verticalSpeed = jumpSpeed;
+			}
 		}
 	}
 	

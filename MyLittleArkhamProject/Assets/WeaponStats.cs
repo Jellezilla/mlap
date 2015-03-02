@@ -19,6 +19,7 @@ public class WeaponStats : MonoBehaviour {
 	
 	//public Rigidbody projectile;
 	public Transform projectile;
+	public bool equipped = false; 
 	
 	public enum Type {
 			shotgun, gun };
